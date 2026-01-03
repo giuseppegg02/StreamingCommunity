@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StreamingCommunity - Ricerca</title>
+  <meta name="description" content="Cerca e scarica i tuoi contenuti preferiti da tutti i siti di streaming" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -136,11 +138,15 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500/50">
-            <svg class="inline w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button type="submit" id="searchButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+            <svg id="searchIcon" class="inline w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
-            Cerca Contenuti
+            <svg id="loadingIcon" class="inline w-5 h-5 mr-2 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="searchText">Cerca Contenuti</span>
           </button>
         </form>
       </div>
@@ -226,6 +232,53 @@
       scroll-behavior: smooth;
     }
   </style>
+
+  <script>
+    // Form submission with loading state
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const searchButton = document.getElementById('searchButton');
+      const searchIcon = document.getElementById('searchIcon');
+      const loadingIcon = document.getElementById('loadingIcon');
+      const searchText = document.getElementById('searchText');
+      const queryInput = document.getElementById('id_query');
+
+      // Focus on search input
+      queryInput.focus();
+
+      // Handle form submission
+      form.addEventListener('submit', function(e) {
+        const query = queryInput.value.trim();
+        if (!query) {
+          e.preventDefault();
+          queryInput.focus();
+          queryInput.classList.add('border-red-500', 'ring-2', 'ring-red-500/20');
+          setTimeout(() => {
+            queryInput.classList.remove('border-red-500', 'ring-2', 'ring-red-500/20');
+          }, 2000);
+          return;
+        }
+
+        // Show loading state
+        searchButton.disabled = true;
+        searchIcon.classList.add('hidden');
+        loadingIcon.classList.remove('hidden');
+        searchText.textContent = 'Ricerca in corso...';
+      });
+
+      // Remove validation classes on input
+      queryInput.addEventListener('input', function() {
+        this.classList.remove('border-red-500', 'ring-2', 'ring-red-500/20');
+      });
+
+      // Enter key shortcut for form
+      queryInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      });
+    });
+  </script>
 </body>
 </html>
 
