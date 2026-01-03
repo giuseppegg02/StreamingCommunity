@@ -136,13 +136,13 @@
               <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-200">Seleziona Episodi</h3>
                 <div class="flex gap-2 flex-wrap">
-                  <button type="button" onclick="selectAllEpisodes({{ season.number }})" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 py-2 px-4 rounded-lg transition-colors" title="Seleziona tutti gli episodi (Ctrl+A)">
+                  <button type="button" onclick="selectAllEpisodes({{ season.number }})" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 py-2 px-4 rounded-lg transition-colors" title="Seleziona tutti gli episodi (Ctrl+Shift+A)">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Seleziona Tutti
                   </button>
-                  <button type="button" onclick="deselectAllEpisodes({{ season.number }})" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 py-2 px-4 rounded-lg transition-colors" title="Deseleziona tutti (Ctrl+D)">
+                  <button type="button" onclick="deselectAllEpisodes({{ season.number }})" class="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 py-2 px-4 rounded-lg transition-colors" title="Deseleziona tutti (Ctrl+Shift+D)">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -312,18 +312,18 @@
         });
       });
 
-      // Keyboard shortcuts for season forms
+      // Keyboard shortcuts for season forms (use Ctrl+Shift+A/D to avoid conflicts)
       document.querySelectorAll('form[id^="form-season-"]').forEach(form => {
         const seasonNumber = form.querySelector('input[name="season_number"]').value;
         
-        // Ctrl+A to select all
         form.addEventListener('keydown', function(e) {
-          if (e.ctrlKey && e.key === 'a') {
+          // Ctrl+Shift+A to select all
+          if (e.ctrlKey && e.shiftKey && e.key === 'A') {
             e.preventDefault();
             selectAllEpisodes(seasonNumber);
           }
-          // Ctrl+D to deselect all
-          if (e.ctrlKey && e.key === 'd') {
+          // Ctrl+Shift+D to deselect all
+          if (e.ctrlKey && e.shiftKey && e.key === 'D') {
             e.preventDefault();
             deselectAllEpisodes(seasonNumber);
           }
@@ -360,11 +360,11 @@
         });
       });
 
-      // Initialize counts
-      const seasons = document.querySelectorAll('[id^="count_"]');
-      seasons.forEach(countEl => {
-        const seasonNum = countEl.id.replace('count_', '');
-        updateSelectedEpisodes(seasonNum);
+      // Initialize counts for seasons with pre-selected episodes only
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          updateSelectedEpisodes(cb.dataset.season);
+        }
       });
     });
   </script>
